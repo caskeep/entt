@@ -389,6 +389,10 @@ TEST(NonOwningGroup, TrackEntitiesOnComponentDestruction) {
     ASSERT_FALSE(cgroup.empty());
 }
 
+TEST(NonOwningGroup, Less) {
+    // TODO
+}
+
 TEST(OwningGroup, Functionalities) {
     entt::registry registry;
     auto group = registry.group<int>(entt::get<char>);
@@ -889,4 +893,8 @@ TEST(OwningGroup, TrackEntitiesOnComponentDestruction) {
 
     ASSERT_FALSE(group.empty());
     ASSERT_FALSE(cgroup.empty());
+}
+
+TEST(OwningGroup, Less) {
+    // TODO
 }

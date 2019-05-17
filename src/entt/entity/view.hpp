@@ -171,7 +171,7 @@ class basic_view {
     }
 
     template<typename Comp, typename Func, typename... Other, typename... Type>
-    void each(Func func, type_list<Other...>, type_list<Type...>) const {
+    void traverse(Func func, type_list<Other...>, type_list<Type...>) const {
         const auto end = std::get<pool_type<Comp> *>(pools)->sparse_set<Entity>::end();
         auto begin = std::get<pool_type<Comp> *>(pools)->sparse_set<Entity>::begin();
 
@@ -188,7 +188,15 @@ class basic_view {
                 }
             });
         } else {
-            // TODO
+            std::for_each(begin, end, [&func, this](const auto entity) mutable {
+                if((std::get<pool_type<Other> *>(pools)->has(entity) && ...)) {
+                    if constexpr(std::is_invocable_v<Func, decltype(get<Type>({}))...>) {
+                        func(std::get<pool_type<Type> *>(pools)->get(entity)...);
+                    } else {
+                        func(entity, std::get<pool_type<Type> *>(pools)->get(entity)...);
+                    }
+                }
+            });
         }
     }
 
@@ -425,7 +433,7 @@ public:
     template<typename Comp, typename Func>
     inline void each(Func func) const {
         using other_type = type_list_cat_t<std::conditional_t<std::is_same_v<Comp, Component>, type_list<>, type_list<Component>>...>;
-        each<Comp>(std::move(func), other_type{}, type_list<Component...>{});
+        traverse<Comp>(std::move(func), other_type{}, type_list<Component...>{});
     }
 
     /**
@@ -484,8 +492,8 @@ public:
     template<typename Comp, typename Func>
     inline void less(Func func) const {
         using other_type = type_list_cat_t<std::conditional_t<std::is_same_v<Comp, Component>, type_list<>, type_list<Component>>...>;
-        using non_empty_type = type_list_cat<std::conditional_t<std::is_empty_v<Component>, type_list<>, type_list<Component>>...>;
-        each<Comp>(std::move(func), other_type{}, non_empty_type{});
+        using non_empty_type = type_list_cat_t<std::conditional_t<std::is_empty_v<Component>, type_list<>, type_list<Component>>...>;
+        traverse<Comp>(std::move(func), other_type{}, non_empty_type{});
     }
 
 private:

@@ -362,7 +362,7 @@ public:
      */
     template<typename Func>
     inline void less(Func func) const {
-        using non_empty_get = type_list_cat<std::conditional_t<std::is_empty_v<Get>, type_list<>, type_list<Get>>...>;
+        using non_empty_get = type_list_cat_t<std::conditional_t<std::is_empty_v<Get>, type_list<>, type_list<Get>>...>;
         traverse(std::move(func), non_empty_get{});
     }
 
@@ -750,8 +750,8 @@ public:
      */
     template<typename Func>
     inline void less(Func func) const {
-        using non_empty_owned = type_list_cat<std::conditional_t<std::is_empty_v<Owned>, type_list<>, type_list<Owned>>...>;
-        using non_empty_get = type_list_cat<std::conditional_t<std::is_empty_v<Get>, type_list<>, type_list<Get>>...>;
+        using non_empty_owned = type_list_cat_t<std::conditional_t<std::is_empty_v<Owned>, type_list<>, type_list<Owned>>...>;
+        using non_empty_get = type_list_cat_t<std::conditional_t<std::is_empty_v<Get>, type_list<>, type_list<Get>>...>;
         traverse(std::move(func), non_empty_owned{}, non_empty_get{});
     }
 
