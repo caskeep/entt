@@ -97,7 +97,7 @@ class basic_group<Entity, get_t<Get...>> {
     template<typename Func, typename... Weak>
     inline void traverse(Func func, type_list<Weak...>) const {
         for(const auto entt: *handler) {
-            if constexpr(std::is_invocable_v<Func, decltype(get<Get>({}))...>) {
+            if constexpr(std::is_invocable_v<Func, decltype(get<Weak>({}))...>) {
                 func(std::get<pool_type<Weak> *>(pools)->get(entt)...);
             } else {
                 func(entt, std::get<pool_type<Weak> *>(pools)->get(entt)...);
